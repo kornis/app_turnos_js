@@ -7,8 +7,20 @@ module.exports = (sequelize, dataTypes) => {
             unsigned: true,
             autoIncrement: true
         },
+        _uuid: {
+            type: dataTypes.STRING,
+            allowNull: false
+        },
         date: {
-            type: dataTypes.DATE,
+            type: dataTypes.DATETIME,
+            allowNull: false
+        },
+        hour: {
+            type: dataTypes.STRING,
+            allowNull: false
+        },
+        fraction: {
+            type: dataTypes.STRING,
             allowNull: false
         },
         employee_id: {

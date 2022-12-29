@@ -1,5 +1,7 @@
+const { v4: uuidv4 } = require('uuid');
 const dbAppointmentService = require("../../infrastructure/services/appointments");
-const { Appointment } = require("../entities")
+const { Appointment } = require("../entities");
+const { minAppointmentDuration } = require("../../utils/config");
 
 module.exports = {
     createAppointment: (req, res) => {
@@ -12,7 +14,10 @@ module.exports = {
             })
         }
 
-        const appointment = new Appointment(req.body.store, req.body.employee, req.body.customer, req.body.type, req.body.date);
+        const uuid = uuidv4();
+
+        // extraer horario del body.date y enviarlo en el new Appointment
+        const appointment = new Appointment(req.body.store, req.body.employee, req.body.customer, req.body.type, req.body.date, );
         const dbResponse =  dbAppointmentService.dbCreateAppointment(appointment);
 
         if(dbResponse) {
@@ -30,5 +35,23 @@ module.exports = {
                 error: "Error trying to create appointment. Please, try again"
             })
         }
-    }
+    },
+
+    
+}
+
+function generateAppointments(uuid, store, employee, customer, type, date) {
+    const appointmentsGroup = [];
+        for(let i = 0; i < type.duration / minAppointmentDuration; i++) {
+            appointmentsGroup.push(new Appointment(store, employee, customer, type, date, uuid));
+        }
+    return appointmentsGroup;
+}
+
+async function validateAppointmentDate(employee_id, date) {
+    
+    const calendar = await dbAppointmentService.getCalendarByEmployee(employee_id);
+
+    
+ 
 }

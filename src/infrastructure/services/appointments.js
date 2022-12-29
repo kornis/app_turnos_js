@@ -4,7 +4,7 @@ const dbCreateAppointment = async (Appointment) => {
 
     try {
         if(!Appointment) {
-            throw new Error("(dbCreateAppointment.js): Must recieve Appointment Info")
+            throw new Error("(dbCreateAppointment): Must recieve Appointment Info")
         }
         let appointmentData = Appointment.getAppointmentInfo();
         const dbResult = await db.Appointment.create(appointmentData);
@@ -12,11 +12,37 @@ const dbCreateAppointment = async (Appointment) => {
         if(dbResult) {
             return dbResult;
         } else {
-            throw new Error("(dbCreateAppointment.js): Error trying to create appointment");
+            throw new Error("(dbCreateAppointment): Error trying to create appointment");
         }
     } catch(error) {
         console.log(error);
     }
 }
 
-module.exports = { dbCreateAppointment };
+const getCalendarByEmployee = async (employee, date = null) => {
+    try {
+        const opt = {
+            where: {
+                employee_id: employee
+            }
+        };
+        if(!employee) {
+            throw new Error("(getCalendarByEmployee): employee parameter is mandatory");
+        }
+
+        if(date) {
+            opt.where = {
+                date
+            }
+        }
+
+        let calendar = await db.Appointment.findAll(opt);
+
+        return calendar;
+    } catch(error) {
+        console.log("(getCalendarByEmployee): Error trying to get calendar", error);
+        throw error;
+    }
+}
+
+module.exports = { dbCreateAppointment, getCalendarByEmployee };

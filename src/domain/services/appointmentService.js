@@ -5,7 +5,7 @@ const { minAppointmentDuration } = require("../../utils/config");
 
 module.exports = {
     createAppointment: (req, res) => {
-        if(!req.body.date || !req.body.employee || !req.body.store || !req.body.customer || !req.body.type) {
+        if(!req.body.date || !req.body.employee || !req.body.store || !req.body.customer || !req.body.type || !req.body.hour) {
             return res.status(400).json({
                 meta: {
                     code: res.statusCode
@@ -17,7 +17,7 @@ module.exports = {
         const uuid = uuidv4();
 
         // extraer horario del body.date y enviarlo en el new Appointment
-        const appointment = new Appointment(req.body.store, req.body.employee, req.body.customer, req.body.type, req.body.date, );
+        const appointment = new Appointment(req.body.store, req.body.employee, req.body.customer, req.body.type, req.body.date, req.body.hour );
         const dbResponse =  dbAppointmentService.dbCreateAppointment(appointment);
 
         if(dbResponse) {

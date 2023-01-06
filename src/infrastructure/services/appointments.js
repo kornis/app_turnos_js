@@ -19,13 +19,15 @@ const dbCreateAppointment = async (Appointment) => {
     }
 }
 
-const getCalendarByEmployee = async (employee, date = null) => {
+const dbGetCalendarByEmployee = async (employee_id, date = null) => {
     try {
+
         const opt = {
             where: {
                 employee_id: employee
             }
         };
+
         if(!employee) {
             throw new Error("(getCalendarByEmployee): employee parameter is mandatory");
         }
@@ -39,10 +41,12 @@ const getCalendarByEmployee = async (employee, date = null) => {
         let calendar = await db.Appointment.findAll(opt);
 
         return calendar;
+
     } catch(error) {
+
         console.log("(getCalendarByEmployee): Error trying to get calendar", error);
         throw error;
     }
 }
 
-module.exports = { dbCreateAppointment, getCalendarByEmployee };
+module.exports = { dbCreateAppointment, dbGetCalendarByEmployee };

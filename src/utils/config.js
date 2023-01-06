@@ -1,4 +1,4 @@
-const minAppointmentDuration = 15;
+const minAppointmentDuration = 30;
 
 module.exports = {
     minAppointmentDuration

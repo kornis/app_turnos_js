@@ -16,17 +16,13 @@ module.exports = {
         }
 
         const uuid = uuidv4();
-        const appointments = generateAppointments(uuid, req.body.store, req.body.employee, req.body.customer, req.body.type, req.body.date, req.body.hour);
-        return res.json(generateHoursForAppointments("23:00", 3, 30))
-       const dbResponse = await storeAppointments(appointments);
-        // const appointment = new Appointment(req.body.store, req.body.employee, req.body.customer, req.body.type, req.body.date, req.body.hour, minAppointmentDuration, uuid);
-
-        if(dbResponse.length > 0) {
+        const appointments = await generateAppointments(uuid, req.body.store, req.body.employee, req.body.customer, req.body.type, req.body.date, req.body.hour);
+        if(appointments.length > 0) {
             return res.status(201).json({
                 meta: {
                     code: res.statusCode
                 },
-                appointment: dbResponse
+                appointment: appointments
             })
         } else {
             return res.status(400).json({
@@ -55,29 +51,25 @@ module.exports = {
     }
 }
 
-function generateAppointments(uuid, store, employee, customer, type, date, hour) {
-    const appointmentsGroup = [];
-    let fraction = hour;
-    const hoursGroup = generateHoursForAppointments(hour, type.duration, minAppointmentDuration);
-    for(let i = 0; i < hoursGroup.length; i++) {
-            
-            appointmentsGroup.push(new Appointment(store, employee, customer, type, date, hour, fraction.format("HH:mm:ss"), uuid));
-        }
-    return appointmentsGroup;
-}
-
-async function storeAppointments(appointments) {
-    // (revisar) Revisar que devuelve dbCreateAppointment si falla la creación
+async function generateAppointments(uuid, store, employee, customer, type, date, hour) {
     try {
-        const dbResponse = [];
-        for(let i = 0; i < appointments.length; i++) {
-            const response = await dbAppointmentService.dbCreateAppointment(appointments[i]);
-            dbResponse.push(response);
+        const appointmentsGroup = [];
+        const hoursGroup = generateHoursForAppointments(hour, type.duration, minAppointmentDuration);
+        const appointmentFound = await validateAppointmentDate(employee.id, date, hoursGroup);
+        if(appointmentFound) {
+            return []
         }
+        for(let i = 0; i < hoursGroup.length; i++) {
+                
+                let newAppointment = new Appointment(store, employee, customer, type, date, hoursGroup[i], JSON.stringify(hoursGroup), uuid);
+                await dbAppointmentService.dbCreateAppointment(newAppointment);
+                appointmentsGroup.push(newAppointment);
+            }
+        return appointmentsGroup;
 
-        return dbResponse;
     } catch(error) {
         console.log(error);
+        throw error;
     }
 }
 
@@ -109,7 +101,7 @@ function generateHoursForAppointments(hour, duration, fraction) {
     const hoursArray = [];
     let hourAndMinutes = validateHours(hour.split(":"))
 
-    const hoursToGenerate = (60/fraction) * duration;
+    const hoursToGenerate = (60/fraction) * (duration/60);
 
     for(let i = 0; i < hoursToGenerate; i++) {
          hoursArray.push(validateHours([hourAndMinutes[0], hourAndMinutes[1] + (fraction * i)]).join(":")) 
@@ -118,9 +110,8 @@ function generateHoursForAppointments(hour, duration, fraction) {
     return hoursArray;
 
 }
-async function validateAppointmentDate(employee_id, date) {
-    
-    const calendar = await dbAppointmentService.getCalendarByEmployee(employee_id);
+async function validateAppointmentDate(employee_id, date, hoursGroup) {
+    return await dbAppointmentService.validateAppointmentNotCreated(employee_id, date, hoursGroup);
 
     
  

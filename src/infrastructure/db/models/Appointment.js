@@ -12,7 +12,7 @@ module.exports = (sequelize, dataTypes) => {
             allowNull: false
         },
         date: {
-            type: dataTypes.DATE,
+            type: dataTypes.STRING,
             allowNull: false
         },
         hour: {

@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const passport = require("passport");
+const cors = require("cors");
 const { jwtStrategy } = require("./domain/services/passport");
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +12,7 @@ const appointmentRouter = require("./routes/appointments");
 const adminRouter = require("./routes/admin");
 
 // Middlewares
+app.use(cors());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(passport.initialize());

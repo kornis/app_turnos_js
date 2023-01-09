@@ -43,7 +43,23 @@ module.exports = {
             })
         }
 
-        const result = await dbAppointmentService.dbGetCalendarByEmployee(req.body.employee.id);
+        const result = await dbAppointmentService.dbGetCalendarByEmployee(req.body.employee.id, req.body.date, req.body.customer);
+        return res.status(200).json({
+            code: res.statusCode,
+            data: result
+        })
+    },
+
+    getEmployees: async (req, res) => {
+        if(!req.body.store) {
+            return res.status(400).json({
+                code: res.statusCode,
+                error: "Error params"
+            })
+        }
+
+        const result = await dbAppointmentService.getEmployeeList(req.body.store.id);
+
         return res.status(200).json({
             code: res.statusCode,
             data: result

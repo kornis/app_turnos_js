@@ -19,23 +19,28 @@ const dbCreateAppointment = async (Appointment) => {
     }
 }
 
-const dbGetCalendarByEmployee = async (employee_id, date = null) => {
+const dbGetCalendarByEmployee = async (employee_id, date, customer) => {
     try {
 
         const opt = {
             where: {
-                employee_id: employee
-            }
+                [db.Sequelize.Op.and]: [
+                    { employee_id: employee_id },
+                    { date }
+                ]
+            },
+            attributes: {exclude: ["customer_id"]},
+            group: "_uuid"
         };
 
-        if(!employee) {
+        if(!employee_id) {
             throw new Error("(getCalendarByEmployee): employee parameter is mandatory");
         }
 
-        if(date) {
-            opt.where = {
-                date
-            }
+        if(customer && customer.id) {
+            opt.where[db.Sequelize.Op.and].push({
+                customer_id: customer.id
+            })
         }
 
         let calendar = await db.Appointment.findAll(opt);
@@ -78,4 +83,22 @@ const validateAppointmentNotCreated = async (employee_id, date, hoursGroup) => {
     }
 }
 
-module.exports = { dbCreateAppointment, dbGetCalendarByEmployee, validateAppointmentNotCreated };
+const getEmployeeList = async (store_id) => {
+    try {
+
+        if(!store_id) {
+            throw new Error("Params required (store)");
+        }
+
+        return await db.Employee.findAll({
+            where: {
+                store_id: store_id
+            }
+        });
+    } catch(error) {
+        console.log(("(getEmployeeList): Error trying to get employees"));
+        throw error;
+    }
+}
+
+module.exports = { dbCreateAppointment, dbGetCalendarByEmployee, validateAppointmentNotCreated, getEmployeeList };

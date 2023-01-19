@@ -1,6 +1,6 @@
 const { body } = require("express-validator");
 
-const loginValidaor = [
+const loginValidator = [
     body("email")
         .notEmpty().withMessage("Email field cannot be null").bail()
         .isEmail().withMessage("Send valid email"),
@@ -32,10 +32,17 @@ const registerValidator = [
             throw new Error("id_number field must be only numbers")
         }
         return true;
+    }),
+    body("repeat_password").custom((field, { req }) => {
+        if(req.body.password === field) {
+            return true;
+        }
+
+        throw new Error("field password and repeat_password don't match")
     })
 ];
 
 module.exports = {
-    loginValidaor,
+    loginValidator,
     registerValidator
 }

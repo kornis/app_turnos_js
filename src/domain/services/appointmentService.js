@@ -36,14 +36,14 @@ module.exports = {
 
     getCalendarByEmployee: async (req, res) => {
 
-        if(!req.body.employee || !req.body.employee.id) {
+        if(!req.body.employee || !req.body.employee.id || !req.body.store) {
             return res.status(400).json({
                 code: res.statusCode,
                 error: "Error params"
             })
         }
 
-        const result = await dbAppointmentService.dbGetCalendarByEmployee(req.body.employee.id, req.body.date, req.body.customer);
+        const result = await dbAppointmentService.dbGetCalendarByEmployee(req.body.store.id, req.body.employee.id, req.body.date, req.body.customer);
         return res.status(200).json({
             code: res.statusCode,
             data: result

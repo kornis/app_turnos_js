@@ -19,18 +19,18 @@ const dbCreateAppointment = async (Appointment) => {
     }
 }
 
-const dbGetCalendarByEmployee = async (employee_id, date, customer) => {
+const dbGetCalendarByEmployee = async (store_id, employee_id, date, customer) => {
     try {
 
         const opt = {
             where: {
                 [db.Sequelize.Op.and]: [
                     { employee_id: employee_id },
-                    { date }
+                    { date },
+                    { store_id }
                 ]
             },
-            attributes: {exclude: ["customer_id"]},
-            group: "_uuid"
+            attributes: ["hour"]
         };
 
         if(!employee_id) {

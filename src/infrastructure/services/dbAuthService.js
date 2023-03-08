@@ -15,7 +15,7 @@ module.exports = {
                 paramErrors.push("typeUser")
             }
             if (paramErrors.length > 0) {
-                return new InternalParamsError(paramErrors);
+                throw new InternalParamsError(paramErrors);
             }
             if (typeUser === "customer") {
                 return await db.Customer.create(user);
@@ -29,7 +29,7 @@ module.exports = {
 
         try {
             if (!user) {
-                return new InternalParamsError(["user"]);
+                throw new InternalParamsError(["user"]);
             }
 
             const dbResponse = await db.Customer.findOne({ where: { email: user.email } });
@@ -42,7 +42,7 @@ module.exports = {
 
             } else {
 
-                return new CredentialsError()
+                throw new CredentialsError()
             }
 
 
@@ -57,9 +57,10 @@ module.exports = {
     dbGLogin: async (user) => {
         try {
             if (!user) {
-                throw new Error("Error params")
+                throw new InternalParamsError(["user"]);
             }
             const userFound = await db.GCustomer.findOne({ where: { email: user.getEmail() } });
+            
             if (userFound.gID) {
                 return userFound
             } else {
@@ -67,8 +68,22 @@ module.exports = {
                 return await db.GCustomer.create(user.getFullUser());
             }
         } catch (error) {
-            console.log(error);
-            throw new Error("(dbGLogin): Error trying to login with google")
+            throw new ErrorHandler(error, "(dbGLogin): Error trying to login with google", error.stack)
+        }
+    },
+
+    dbGetUserByEmail: async (email) => {
+        try {
+            if(!email) {
+                throw new InternalParamsError(["email"]);
+            }
+            return await db.Customer.findOne({where: { email }});
+
+        } catch(error) {
+            if(error instanceof ErrorHandler) {
+                throw error
+            }
+            throw new ErrorHandler(error, "(dbGetUserByEmail): Error trying to find user by email", error.stack);
         }
     }
 }

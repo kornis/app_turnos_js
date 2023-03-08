@@ -31,6 +31,9 @@ module.exports = (sequelize, dataTypes) => {
             type: dataTypes.INTEGER,
             unsigned: true,
             foreignKey: true
+        },
+        avatar: {
+            type: dataTypes.STRING
         }
     }, 
     {

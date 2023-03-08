@@ -25,7 +25,13 @@ module.exports = {
         }
 
         try {
-
+            const response = await validateUserExists(req.body.email);
+            if(response) {
+                return res.status(401).json({
+                    code: res.statusCode,
+                    message: "User already exists..."
+                });    
+            }
             req.body.password = bcrypt.hashSync(req.body.password, 12);
             const dbResponse =  await dbAuthService.registerUser(req.body, typeUser.CUSTOMER);
             if(dbResponse instanceof ErrorHandler) {
@@ -148,26 +154,52 @@ const validateGoogleUser = async (token) => {
         return user;
 
     } catch(error) {
-        throw new ErrorHandler(error, "Error with token validation", error.stack)
+
+        throw new ErrorHandler(error, "Error with token validation", error.stack);
+        
     }
 }
 
 const getGoogleUser = async (token) => {
+
     try {
+
         const gUser = await validateGoogleUser(token);
         const newGUser = new GCustomer(parseGoogleUser(gUser));
-        return await dbAuthService.dbGLogin(newGUser);
+        const response = await dbAuthService.dbGLogin(newGUser);
+        const userToken = encode(response.email);
+
+        return {
+            ...response.dataValues,
+            token: userToken
+        }
+
     } catch(error) {
-        throw new ErrorHandler(error, "Error with token validation", error.stack)
+
+        throw new ErrorHandler(error, "Error with token validation", error.stack);
+
     }
 }
 
 const parseGoogleUser = (user) => {
+
     return {
         name: user.given_name,
         lastname: user.family_name,
         email: user.email,
         avatar: user.picture,
         gID: user.sub
+    }
+}
+
+const validateUserExists = async (email) => {
+    try {
+        return await dbAuthService.dbGetUserByEmail(email);
+    } catch(error) {
+        if(error instanceof ErrorHandler) {
+            throw error;
+        } else {
+            throw new ErrorHandler(error, "Internal Error trying to get user by email", error.stack)
+        }
     }
 }

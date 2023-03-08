@@ -6,6 +6,7 @@ class Employee {
     active = 1;
     store = null;
     address = null;
+    avatar = null;
 
     constructor(employee) {
         this.name = employee.name;
@@ -14,6 +15,7 @@ class Employee {
         this.admission_date = employee.admission_date;
         this.address = employee.address;
         this.store = employee.store;
+        this.avatar = employee.avatar;
     }
 
     getEmployeeData() {
@@ -24,7 +26,8 @@ class Employee {
             admission_date: Date.now(),
             active: this.active,
             store_id: this.store.id,
-            address: this.address.id
+            address: this.address.id,
+            avatar: this.avatar
         }
     }
 }

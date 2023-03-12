@@ -20,7 +20,7 @@ module.exports = (sequelize, dataTypes) => {
             type: dataTypes.DATE
         },
         active: {
-            type: dataTypes.TINYINT
+            type: dataTypes.SMALLINT
         },
         store_id: {
             type: dataTypes.INTEGER,

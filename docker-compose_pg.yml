@@ -1,0 +1,24 @@
+version: '3.1'
+
+services:
+
+  db:
+   image: postgres
+   restart: always
+   environment:
+    POSTGRES_PASSWORD: fede
+    POSTGRES_USER: fede
+    POSTGRES_DB: negocio
+   volumes: 
+    - pg_volume:/var/lib/pg_data
+   ports: 
+    - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  pg_volume:

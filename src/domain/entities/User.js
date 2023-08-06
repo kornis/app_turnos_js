@@ -6,6 +6,11 @@ class User {
     id_number = null;
     email = "";
     password = null;
+    street = "";
+    street_number = null;
+    city = "";
+    country = "";
+    phone = "";
 
     constructor(user) {
 
@@ -15,6 +20,11 @@ class User {
         this.email = user.email;
         //this.password = bcrypt.hashSync(user.password, 12);
         this.password = user.password;
+        this.street = user.street;
+        this.street_number = user.street_number;
+        this.city = user.city;
+        this.country = user.country;
+        this.phone = user.phone;
     }
 
     getFullName() {
@@ -43,6 +53,16 @@ class User {
             lastname: this.lastname,
             email: this.email,
             id_number: this.id_number
+        }
+    }
+
+    getUserAddress() {
+        return {
+            street: this.street,
+            street_number: this.street_number,
+            city: this.city,
+            country: this.country,
+            phone: this.phone
         }
     }
 }

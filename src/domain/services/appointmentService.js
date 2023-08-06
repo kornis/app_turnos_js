@@ -2,7 +2,6 @@ const { v4: uuidv4 } = require('uuid');
 const dbAppointmentService = require("../../infrastructure/services/appointments");
 const { Appointment } = require("../entities");
 const { minAppointmentDuration } = require("../../utils/config");
-const dayjs = require("dayjs");
 
 module.exports = {
     createAppointment: async (req, res) => {

@@ -26,6 +26,22 @@ module.exports = (sequelize, dataTypes) => {
         },
         avatar: {
             type: dataTypes.STRING(200),
+        },
+        street: {
+            type: dataTypes.STRING
+        },
+        street_number: {
+            type: dataTypes.INTEGER,
+            unsigned: true
+        },
+        city: {
+            type: dataTypes.STRING
+        },
+        country: {
+            type: dataTypes.STRING
+        },
+        phone: {
+            type: dataTypes.STRING
         }
     },
     {
@@ -33,7 +49,15 @@ module.exports = (sequelize, dataTypes) => {
         paranoid: true,
         createdAt: "created_at",
         updatedAt: "updated_at",
-        deletedAt: "deleted_at"
+        deletedAt: "deleted_at",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        indexes: [
+            {
+                unique: true,
+                fields: ["email", "name"]
+            }
+        ]
     });
 
     return GCustomer;

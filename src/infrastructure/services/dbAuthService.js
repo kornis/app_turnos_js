@@ -7,16 +7,6 @@ module.exports = {
     registerUser: async (user, typeUser) => {
 
         try {
-            const paramErrors = [];
-            if (!user) {
-                paramErrors.push("user")
-            }
-            if (!typeUser) {
-                paramErrors.push("typeUser")
-            }
-            if (paramErrors.length > 0) {
-                throw new InternalParamsError(paramErrors);
-            }
             if (typeUser === "customer") {
                 return await db.Customer.create(user);
             }
@@ -56,9 +46,7 @@ module.exports = {
 
     dbGLogin: async (user) => {
         try {
-            if (!user) {
-                throw new InternalParamsError(["user"]);
-            }
+            
             const userFound = await db.GCustomer.findOne({ where: { email: user.getEmail() } });
             
             if (userFound.gID) {
@@ -74,16 +62,36 @@ module.exports = {
 
     dbGetUserByEmail: async (email) => {
         try {
-            if(!email) {
-                throw new InternalParamsError(["email"]);
-            }
+            
             return await db.Customer.findOne({where: { email }});
 
         } catch(error) {
             if(error instanceof ErrorHandler) {
                 throw error
             }
+            console.log(error)
             throw new ErrorHandler(error, "(dbGetUserByEmail): Error trying to find user by email", error.stack);
+        }
+    },
+
+    findUserCreated: async (email, id_number) => {
+        try {
+
+            const userFound = await db.Customer.findOne({
+                where: {
+                    [db.Sequelize.Op.or]: [
+                        { email },
+                        { id_number }
+                ]}
+            });
+
+            if (userFound) {
+                return true;
+            }
+
+            return false;
+        } catch(error) {
+
         }
     }
 }

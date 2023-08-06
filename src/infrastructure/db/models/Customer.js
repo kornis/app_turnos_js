@@ -1,27 +1,43 @@
-module.exports = ( sequelize, DataTypes ) => {
+module.exports = ( sequelize, dataTypes ) => {
     const Customer = sequelize.define("Customer", 
     {
         id: {
-            type: DataTypes.BIGINT,
+            type: dataTypes.BIGINT,
             primaryKey: true,
             unsigned: true,
             autoIncrement: true
         },
         name: {
-            type: DataTypes.STRING
+            type: dataTypes.STRING
         },
         lastname: {
-            type: DataTypes.STRING
+            type: dataTypes.STRING
         },
         email: {
-            type: DataTypes.STRING
+            type: dataTypes.STRING
         },
         password: {
-            type: DataTypes.STRING
+            type: dataTypes.STRING
         },
         id_number: {
-            type: DataTypes.BIGINT,
+            type: dataTypes.BIGINT,
             unsigned: true
+        },
+        street: {
+            type: dataTypes.STRING
+        },
+        street_number: {
+            type: dataTypes.INTEGER,
+            unsigned: true
+        },
+        city: {
+            type: dataTypes.STRING
+        },
+        country: {
+            type: dataTypes.STRING
+        },
+        phone: {
+            type: dataTypes.STRING
         }
     },
     {
@@ -30,7 +46,15 @@ module.exports = ( sequelize, DataTypes ) => {
         paranoid: true,
         createdAt: "created_at",
         updatedAt: "updated_at",
-        deletedAt: "deleted_at"
+        deletedAt: "deleted_at",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        indexes: [
+            {
+                unique: true,
+                fields: ["name", "email", "id_number"]
+            }
+        ]
     });
 
     return Customer;

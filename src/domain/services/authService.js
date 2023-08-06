@@ -25,7 +25,7 @@ module.exports = {
         }
 
         try {
-            const response = await validateUserExists(req.body.email);
+            const response = await dbAuthService.findUserCreated(req.body.email, req.body.id_number);
             if(response) {
                 return res.status(401).json({
                     code: res.statusCode,
@@ -34,12 +34,14 @@ module.exports = {
             }
             req.body.password = bcrypt.hashSync(req.body.password, 12);
             const dbResponse =  await dbAuthService.registerUser(req.body, typeUser.CUSTOMER);
+            delete dbResponse.dataValues.password;
+
             if(dbResponse instanceof ErrorHandler) {
                 throw dbResponse;
             }
             return res.status(201).json({
                 code: res.statusCode,
-                dbResponse
+                message: "User created successfully!",
             });
 
         } catch( error ) {

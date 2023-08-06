@@ -13,6 +13,9 @@ module.exports = (sequelize, dataTypes) => {
         lastname: {
             type: dataTypes.STRING
         },
+        email: {
+            type: dataTypes.STRING
+        },
         id_number: {
             type: dataTypes.STRING
         },
@@ -27,12 +30,26 @@ module.exports = (sequelize, dataTypes) => {
             unsigned: true,
             foreignKey: true
         },
-        address_id: {
-            type: dataTypes.INTEGER,
-            unsigned: true,
-            foreignKey: true
-        },
         avatar: {
+            type: dataTypes.STRING
+        },
+        password: {
+            type: dataTypes.STRING
+        },
+        street: {
+            type: dataTypes.STRING
+        },
+        street_number: {
+            type: dataTypes.INTEGER,
+            unsigned: true
+        },
+        city: {
+            type: dataTypes.STRING
+        },
+        country: {
+            type: dataTypes.STRING
+        },
+        phone: {
             type: dataTypes.STRING
         }
     }, 
@@ -41,8 +58,23 @@ module.exports = (sequelize, dataTypes) => {
         paranoid: true,
         createdAt: "created_at",
         updatedAt: "updated_at",
-        deletedAt: "deleted_at"
+        deletedAt: "deleted_at",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        indexes: [
+            {
+                unique: true,
+                fields: [ "id_number", "email", "name" ]
+            }
+        ]
     });
+
+    Employee.associate = (models) => {
+        Employee.belongsTo(models.Store, {
+            foreignKey: "store_id",
+            as: "store"
+        });
+    };
 
     return Employee;
 }

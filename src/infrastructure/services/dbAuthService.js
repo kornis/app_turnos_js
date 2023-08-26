@@ -1,7 +1,7 @@
 const db = require("../db/models");
 const { Customer } = require("../../domain/entities");
 const { ErrorHandler, InternalParamsError, CredentialsError } = require("../../utils/errorHandler");
-const logger = require("../../logger");
+const logger = require("../../utils/logger");
 
 module.exports = {
     registerUser: async (user, typeUser) => {

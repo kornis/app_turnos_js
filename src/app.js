@@ -26,7 +26,8 @@ app.use("*", (req, res) => {
 app.use(function(err, req, res, next) {
 
     if(err instanceof ErrorHandler) {
-        res.status(err.statusCode).json({
+        res.status(err.httpCode).json({
+            code: err.httpCode,
             message: err.message
     });
     } else {

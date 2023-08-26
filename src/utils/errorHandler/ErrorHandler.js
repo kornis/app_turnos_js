@@ -1,4 +1,4 @@
-const logger = require("../../logger");
+const logger = require("../logger");
 class ErrorHandler extends Error {
     constructor(message, httpCode, logs = true) {
         super(message);
@@ -9,8 +9,8 @@ class ErrorHandler extends Error {
     }
 
     setLogs() {
-        logger.info(this.message);
-        logger.error(this.error)
+        logger(this.message);
+        logger(this.error)
     }
 }
 

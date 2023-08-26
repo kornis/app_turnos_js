@@ -1,9 +1,9 @@
 const ErrorHandler = require("./ErrorHandler");
-const InternalParamsError = require("./InternalParamsError");
 const CredentialsError = require("./CredentialsError");
+const ParamsError = require("./ParamsError");
 
 module.exports = {
     ErrorHandler,
-    InternalParamsError,
-    CredentialsError
+    CredentialsError,
+    ParamsError
 }

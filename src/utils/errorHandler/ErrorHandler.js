@@ -2,24 +2,19 @@ const logger = require("../../logger");
 class ErrorHandler extends Error {
 
     error = null;
-    constructor(error, message, stack = null, name = null, logs = true) {
+    constructor(message, filename = "", statusCode, isOperational = true, logs = true) {
         super(message);
-        this.error = error;
-        this.stack = stack;
-        this.name = name;
+        this.name = this.constructor.name;
+        this.message = `(Error en ${filename}): ${message}`;
+        this.isOperational = isOperational;
+        this.statusCode = statusCode; 
+
         if(logs)
         this.setLogs();
     }
 
-    getErrorInfo() {
-        return {
-            error: this.name,
-            message: this.message
-        }
-    }
-
     setLogs() {
-        logger.info(this.message);
+        logger.error(this.message);
         logger.error(this.error)
     }
 }

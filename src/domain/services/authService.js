@@ -2,9 +2,9 @@ const { Customer, GCustomer } = require("../entities")
 const dbAuthService = require("../../infrastructure/services/dbAuthService");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
-const { encode } = require("./passport");
+const jwt = require("./jwt");
 const { OAuth2Client, verifyIdToken } = require("google-auth-library");
-const { ErrorHandler, ParamsError } = require("../../utils/errorHandler");
+const { ErrorHandler } = require("../../utils/errorHandler");
 const { typeUser } = require("../../utils/config");
 
 module.exports = {
@@ -17,10 +17,10 @@ module.exports = {
                 delete err.value;
                 return err;
             })
-            const error = new ParamsError(paramErrors, null, null , null).getErrorInfo();
+            const error = new Error()
             return res.status(401).json({
                 code: res.statusCode,
-                ...error
+                message: error.message
             })
         }
 
@@ -49,13 +49,13 @@ module.exports = {
             if(error instanceof ErrorHandler) {
                 return res.status(400).json({
                     code: res.statusCode,
-                    ...error.getErrorInfo()
+                    message: error.message
                 })
             } else {
-                const errorHandler = new ErrorHandler(error, error.message, error.stack, "signup internal error");
+                const errorHandler = new ErrorHandler("signup internal error");
                 return res.status(500).json({
                     code: res.statusCode,
-                    ...errorHandler.getErrorInfo() 
+                    message: errorHandler.message
                 })
             }
         }
@@ -70,10 +70,10 @@ module.exports = {
                     delete err.value;
                     return err;
                 })
-                const error = new ParamsError(paramErrors, null, null , null).getErrorInfo();
+                const error = new Error(paramErrors)
                 return res.status(401).json({
                     code: res.statusCode,
-                    ...error.getErrorInfo()
+                    message: error.message
                 })
             }
 
@@ -81,7 +81,7 @@ module.exports = {
             if(user instanceof ErrorHandler) {
                 throw user
             }
-            const token = encode(user.email);
+            const token = jwt.sign(user.email);
             return res.status(200).json({
                 code: res.statusCode,
                 user,
@@ -91,14 +91,14 @@ module.exports = {
             if(error instanceof ErrorHandler) {
                 return res.status(400).json({
                     code: res.statusCode,
-                    ...error.getErrorInfo()
+                    message: error.message
                 })
             } else {
                 const errorHandler = new ErrorHandler(error, error.message, error.stack, "Login internal error");
 
                 return res.status(500).json({
                     code: res.statusCode,
-                    ...errorHandler.getErrorInfo()
+                    message: errorHandler.message
                 })
             }
         }
@@ -110,7 +110,7 @@ module.exports = {
             if(!req.body.token) {
                 return res.status(400).json({
                     code: res.statusCode,
-                    ...new ParamsError(["token"]).getErrorInfo()
+                    ...new Error("Token es requerido").message
                 }) 
             }
             const gCustomer = await getGoogleUser(req.body.token);
@@ -124,12 +124,12 @@ module.exports = {
             if(error instanceof ErrorHandler) {
                 return res.status(400).json({
                     code: res.statusCode,
-                    ...error.getErrorInfo()
+                    message: error.message
                 })
             } else {
                 return res.status(500).json({
                     code: res.statusCode,
-                    ... new ErrorHandler(error, "Error trying to login with google")
+                    message: new ErrorHandler(error, "Error trying to login with google").message
                 })
             }
         }
@@ -177,9 +177,19 @@ const getGoogleUser = async (token) => {
         }
 
     } catch(error) {
+        if(error instanceof ErrorHandler) {
+            return res.status(400).json({
+                code: res.statusCode,
+                message: error.message
+            })
+        } else {
+            const errorHandler = new ErrorHandler("Login internal error");
 
-        throw new ErrorHandler(error, "Error with token validation", error.stack);
-
+            return res.status(500).json({
+                code: res.statusCode,
+                message: errorHandler.message
+            })
+        }
     }
 }
 
@@ -192,16 +202,4 @@ const parseGoogleUser = (user) => {
         avatar: user.picture,
         gID: user.sub
     }
-}
-
-const validateUserExists = async (email) => {
-    try {
-        return await dbAuthService.dbGetUserByEmail(email);
-    } catch(error) {
-        if(error instanceof ErrorHandler) {
-            throw error;
-        } else {
-            throw new ErrorHandler(error, "Internal Error trying to get user by email", error.stack)
-        }
-    }
-}
+}       

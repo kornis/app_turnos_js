@@ -57,7 +57,7 @@ const dbGetCalendarByEmployee = async (store_id, employee_id, date, customer) =>
 const validateAppointmentNotCreated = async (employee_id, date, hoursGroup) => {
     try {
         if(!employee_id || !date || !hoursGroup) {
-            throw new Error("Params required");
+            throw new Error("(validateAppointmentNotCreated): Params required");
         }
         
         const hoursOpts = [];

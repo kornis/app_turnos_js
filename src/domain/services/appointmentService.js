@@ -5,7 +5,7 @@ const { minAppointmentDuration } = require("../../utils/config");
 
 module.exports = {
     createAppointment: async (req, res) => {
-        if(!req.body.date || !req.body.employee || !req.body.store || !req.body.customer || !req.body.type || !req.body.hour) {
+        if(!req.body.date || !req.body.employee || !req.body.store || !req.body.type || !req.body.hour) {
             return res.status(400).json({
                 meta: {
                     code: res.statusCode
@@ -127,7 +127,4 @@ function generateHoursForAppointments(hour, duration, fraction) {
 }
 async function validateAppointmentDate(employee_id, date, hoursGroup) {
     return await dbAppointmentService.validateAppointmentNotCreated(employee_id, date, hoursGroup);
-
-    
- 
 }

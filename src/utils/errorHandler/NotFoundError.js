@@ -1,8 +1,9 @@
-import ErrorHandler from "./ErrorHandler";
-
-export class NotFoundError extends ErrorHandler {
+const ErrorHandler = require("./ErrorHandler");
+class NotFoundError extends ErrorHandler {
     constructor(message) {
-    super(message, null, 404);
+    super(message, 404);
     this.name = 'NotFoundError';
   }
 }
+
+module.exports = NotFoundError;

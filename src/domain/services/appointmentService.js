@@ -15,7 +15,8 @@ module.exports = {
         }
 
         const uuid = uuidv4();
-        const appointments = await generateAppointments(uuid, req.body.store, req.body.employee, req.body.customer, req.body.type, req.body.date, req.body.hour);
+        const customer = req.jwt.plain.customer;
+        const appointments = await generateAppointments(uuid, req.body.store, req.body.employee, customer, req.body.type, req.body.date, req.body.hour);
         if(appointments.length > 0) {
             return res.status(201).json({
                 meta: {
@@ -70,15 +71,15 @@ async function generateAppointments(uuid, store, employee, customer, type, date,
     try {
         const appointmentsGroup = [];
         const hoursGroup = generateHoursForAppointments(hour, type.duration, minAppointmentDuration);
-        const appointmentFound = await validateAppointmentDate(employee.id, date, hoursGroup);
+        const appointmentFound = await validateAppointmentDate(employee, date, hoursGroup);
         if(appointmentFound) {
             return []
         }
         for(let i = 0; i < hoursGroup.length; i++) {
                 
                 let newAppointment = new Appointment(store, employee, customer, type, date, hoursGroup[i], JSON.stringify(hoursGroup), uuid);
-                await dbAppointmentService.dbCreateAppointment(newAppointment);
-                appointmentsGroup.push(newAppointment);
+                const response = await dbAppointmentService.dbCreateAppointment(newAppointment);
+                appointmentsGroup.push(response);
             }
         return appointmentsGroup;
 

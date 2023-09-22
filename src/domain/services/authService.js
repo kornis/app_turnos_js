@@ -6,6 +6,7 @@ const jwt = require("./jwt");
 const { OAuth2Client, verifyIdToken } = require("google-auth-library");
 const { ErrorHandler } = require("../../utils/errorHandler");
 const { typeUser } = require("../../utils/config");
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
     signup: async (req, res) => {
@@ -33,6 +34,7 @@ module.exports = {
                 });    
             }
             req.body.password = bcrypt.hashSync(req.body.password, 12);
+            req.body._uuid = uuidv4();
             const dbResponse =  await dbAuthService.registerUser(req.body, typeUser.CUSTOMER);
             delete dbResponse.dataValues.password;
 
@@ -81,7 +83,7 @@ module.exports = {
             if(user instanceof ErrorHandler) {
                 throw user
             }
-            const token = jwt.sign(user.email);
+            const token = jwt.sign({customer: user});
             return res.status(200).json({
                 code: res.statusCode,
                 user,

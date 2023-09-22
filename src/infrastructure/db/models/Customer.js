@@ -7,6 +7,10 @@ module.exports = ( sequelize, dataTypes ) => {
             unsigned: true,
             autoIncrement: true
         },
+        _uuid: {
+            type: dataTypes.STRING,
+            unique: true
+        },
         name: {
             type: dataTypes.STRING
         },
@@ -56,6 +60,13 @@ module.exports = ( sequelize, dataTypes ) => {
             }
         ]
     });
+
+    Customer.associate = (models) => {
+        Customer.hasMany(models.Appointment, {
+            foreignKey: "customer_id",
+            as: "appointments"
+        })
+    }
 
     return Customer;
 }

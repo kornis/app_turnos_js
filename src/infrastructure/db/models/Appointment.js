@@ -34,7 +34,7 @@ module.exports = (sequelize, dataTypes) => {
             allowNull: false
         },
         customer_id: {
-            type: dataTypes.INTEGER,
+            type: dataTypes.BIGINT,
             unsigned: true,
             allowNull: false
         },

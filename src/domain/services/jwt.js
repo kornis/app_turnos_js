@@ -5,10 +5,12 @@ const { ErrorHandler } = require("../../utils/errorHandler");
 function verify(req) {
     try {
         const authorization = req.headers.authorization || '';
-        console.log(req.headers.authorization)
         const token = authorization.replace('Bearer ', '');
         const decoded = jwt.verify(token, variables.jwtSecret);
-        req.jwt = decoded;
+        req.jwt = {
+            plain: decoded,
+            token
+        }
         return { valid: true, expired: false, decoded };
     } catch (err) {
         return {

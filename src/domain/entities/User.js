@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 
 class User {
+    id = "";
     name = "";
     lastname = "";
     id_number = null;
@@ -13,7 +14,7 @@ class User {
     phone = "";
 
     constructor(user) {
-
+        this.id = user._uuid;
         this.name = user.name;
         this.lastname = user.lastname;
         this.id_number = user.id_number;
@@ -52,7 +53,8 @@ class User {
             name: this.name,
             lastname: this.lastname,
             email: this.email,
-            id_number: this.id_number
+            id_number: this.id_number,
+            id: this.id
         }
     }
 

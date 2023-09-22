@@ -9,16 +9,21 @@ const errorLogger = require("./utils/logger");
 // Routes
 const authRouter = require("./routes/auth");
 const appointmentRouter = require("./routes/appointments");
+const userRouter = require("./routes/customer");
+const storeRouter = require("./routes/stores");
+
 // Middlewares
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/appointments", appointmentRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/stores", storeRouter);
 app.get("/api/v1/ping", (req, res) => res.send("pong"))
 
 
-app.use("*", (req, res) => {
+app.use("*", (req, res, next) => {
     next(new NotFoundError("Route not found"));
 });
 

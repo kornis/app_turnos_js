@@ -27,7 +27,7 @@ class Appointment {
         return {
             _uuid: this._uuid,
             date: this.date,
-            employee_id: this.employee.id,
+            employee_id: this.employee,
             store_id: this.store.id,
             customer_id: this.customer.id,
             type_id: this.type.id,
